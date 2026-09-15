@@ -1,47 +1,46 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { ref } from 'vue'
+import HomeView from './views/HomeView.vue'
+import AboutView from './views/AboutView.vue'
+import AuthView from './views/AuthView.vue'
+import RegisterView from './views/RegisterView.vue'
+
+type Page = 'home' | 'about' | 'auth' | 'register'
+
+const navItems: { page: Page; label: string }[] = [
+  { page: 'home', label: 'Главная' },
+  { page: 'about', label: 'О мотоциклах' },
+  { page: 'auth', label: 'Вход' },
+  { page: 'register', label: 'Регистрация' },
+]
+
+const currentPage = ref<Page>('home')
+
+function switchPage(page: Page) {
+  currentPage.value = page
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div class="app">
+    <nav class="nav">
+      <div class="nav-brand">MotoRide</div>
+      <button
+        v-for="item in navItems"
+        :key="item.page"
+        class="nav-btn"
+        :class="{ active: currentPage === item.page }"
+        @click="switchPage(item.page)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div id="page-container">
+      <HomeView v-if="currentPage === 'home'" @switchPage="switchPage" />
+      <AboutView v-else-if="currentPage === 'about'" />
+      <AuthView v-else-if="currentPage === 'auth'" @switchPage="switchPage" />
+      <RegisterView v-else @switchPage="switchPage" />
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  </div>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
