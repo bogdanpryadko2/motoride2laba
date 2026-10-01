@@ -1,0 +1,10 @@
+:root {
+    --color-bg: #080a0e;
+    --color-bg-soft: #0f1219;
+    --color-surface: rgba(16, 19, 26, 0.88);
+    --color-text: #e8ecf1;
+    --color-accent: #e63a2a;
+    --color-accent-soft: #ff6b35;
+    --font-main: 'Inter', sans-serif;
+    --font-display: 'Orbitron', monospace;
+}

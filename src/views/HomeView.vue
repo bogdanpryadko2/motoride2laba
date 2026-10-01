@@ -6,17 +6,21 @@
   </div>
 
   <div class="moto-grid">
-    <div v-for="moto in motos" :key="moto.title" class="moto-card">
-      <span class="icon">{{ moto.icon }}</span>
-      <h3>{{ moto.title }}</h3>
-      <div class="spec">{{ moto.spec }}</div>
-      <p>{{ moto.description }}</p>
-      <span class="badge">{{ moto.badge }}</span>
-    </div>
+    <MotoCard
+      v-for="moto in motos"
+      :key="moto.title"
+      :icon="moto.icon"
+      :title="moto.title"
+      :spec="moto.spec"
+      :description="moto.description"
+      :badge="moto.badge"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import MotoCard from '../components/MotoCard.vue'
+
 const motos = [
   {
     icon: 'YZF',
@@ -48,3 +52,5 @@ const motos = [
   },
 ]
 </script>
+
+<style scoped src="../assets/css/pages/home.css"></style>

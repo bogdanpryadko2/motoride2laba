@@ -1,0 +1,33 @@
+body {
+    font-family: var(--font-main);
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-image:
+            radial-gradient(ellipse at 30% 40%, rgba(200, 40, 40, 0.06) 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 60%, rgba(200, 40, 40, 0.04) 0%, transparent 60%),
+            linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-soft) 100%);
+}
+
+.app {
+    max-width: 1200px;
+    width: 100%;
+    background: var(--color-surface);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    padding: 24px 32px 32px;
+}
+
+@media (max-width: 640px) {
+    .app {
+        padding: 16px;
+        border-radius: 20px;
+    }
+}

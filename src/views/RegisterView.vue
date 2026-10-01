@@ -3,7 +3,7 @@
     <h2>Создать аккаунт</h2>
     <p class="register-sub">
       Присоединяйся к сообществу райдеров<br />
-      или <a href="#" @click.prevent="emit('switchPage', 'auth')">войди в существующий</a>
+      или <RouterLink to="/login">войди в существующий</RouterLink>
     </p>
 
     <form @submit.prevent="register">
@@ -31,17 +31,14 @@
     </form>
 
     <div class="auth-footer">
-      Уже есть аккаунт? <a href="#" @click.prevent="emit('switchPage', 'auth')">Войти</a>
+      Уже есть аккаунт? <RouterLink to="/login">Войти</RouterLink>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-
-const emit = defineEmits<{
-  switchPage: [page: 'auth']
-}>()
+import { RouterLink } from 'vue-router'
 
 const name = ref('')
 const email = ref('')
@@ -52,3 +49,7 @@ function register() {
   window.alert('Аккаунт создан! Добро пожаловать!')
 }
 </script>
+
+<style scoped src="../assets/css/components/forms.css"></style>
+<style scoped src="../assets/css/components/buttons.css"></style>
+<style scoped src="../assets/css/pages/register.css"></style>

@@ -35,27 +35,19 @@
     box-shadow: 0 0 0 4px rgba(230, 58, 42, 0.06);
 }
 
-.btn-primary {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #e63a2a, #cc3324);
-    color: #ffffff;
-    border: none;
-    border-radius: 40px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.25s ease;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: 0.3px;
-    margin-top: 6px;
+.auth-footer {
+    text-align: center;
+    margin-top: 22px;
+    color: #8a94a6;
+    font-size: 14px;
 }
 
-.btn-primary:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 30px rgba(230, 58, 42, 0.25);
+.auth-footer a {
+    color: #e63a2a;
+    font-weight: 600;
+    text-decoration: none;
 }
 
-.btn-primary:active {
-    transform: scale(0.97);
+.auth-footer a:hover {
+    text-decoration: underline;
 }

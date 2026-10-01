@@ -3,7 +3,7 @@
     <h2>Добро пожаловать</h2>
     <p class="auth-sub">
       Войди в мир скорости<br />
-      или <a href="#" @click.prevent="emit('switchPage', 'register')">создай аккаунт</a>
+      или <RouterLink to="/register">создай аккаунт</RouterLink>
     </p>
 
     <form @submit.prevent="login">
@@ -23,17 +23,14 @@
     <div class="auth-footer">
       <a href="#" @click.prevent="notify('Восстановление пароля')">Забыли пароль?</a>
       &nbsp;&nbsp;·&nbsp;&nbsp;
-      <a href="#" @click.prevent="emit('switchPage', 'register')">Регистрация</a>
+      <RouterLink to="/register">Регистрация</RouterLink>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-
-const emit = defineEmits<{
-  switchPage: [page: 'register']
-}>()
+import { RouterLink } from 'vue-router'
 
 const email = ref('demo@moto.ru')
 const password = ref('moto2025')
@@ -46,3 +43,7 @@ function login() {
   window.alert('Добро пожаловать, райдер!')
 }
 </script>
+
+<style scoped src="../assets/css/components/forms.css"></style>
+<style scoped src="../assets/css/components/buttons.css"></style>
+<style scoped src="../assets/css/pages/auth.css"></style>

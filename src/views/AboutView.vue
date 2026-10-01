@@ -51,3 +51,6 @@
     </aside>
   </div>
 </template>
+
+<style scoped src="../assets/css/pages/about.css"></style>
+<style scoped src="../assets/css/layout/sidebar.css"></style>

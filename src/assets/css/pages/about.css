@@ -44,3 +44,9 @@
 .content-main .highlight strong {
     color: #e63a2a;
 }
+
+@media (max-width: 640px) {
+    .content-main h2 {
+        font-size: 24px;
+    }
+}

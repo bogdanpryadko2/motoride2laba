@@ -27,20 +27,3 @@
 .auth-wrap .auth-sub a:hover {
     text-decoration: underline;
 }
-
-.auth-footer {
-    text-align: center;
-    margin-top: 22px;
-    color: #8a94a6;
-    font-size: 14px;
-}
-
-.auth-footer a {
-    color: #e63a2a;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.auth-footer a:hover {
-    text-decoration: underline;
-}
