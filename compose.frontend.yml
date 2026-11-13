@@ -1,0 +1,17 @@
+services:
+  api:
+    build:
+      args:
+        MAVEN_CENTRAL_URL: ${MAVEN_CENTRAL_URL:-https://repo.maven.apache.org/maven2}
+    environment:
+      COOKIE_SECURE: 'false'
+  frontend:
+    build:
+      context: ${MOTORIDE_FRONTEND_DIR:?Run npm run docker:up from the frontend project}
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:5173:80'

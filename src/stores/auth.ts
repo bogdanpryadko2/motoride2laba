@@ -1,0 +1,137 @@
+import { ru as ui } from '@/locales/ru'
+import { computed, ref } from 'vue'
+import { defineStore } from 'pinia'
+import { authApi } from '@/api/auth'
+import { bindSession, refreshSession, invalidateSessionRequests, waitForRefresh } from '@/api/http'
+import { apiError } from '@/api/errors'
+import type { LoginRequest, RegisterRequest, PasswordChange, Tokens, User } from '@/types/api'
+
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref<User | null>(null)
+  const accessToken = ref<string | null>(null)
+  const expiresAt = ref(0)
+  const status = ref<'pending' | 'authenticated' | 'guest' | 'unavailable'>('pending')
+  const sessionError = ref('')
+  const busy = ref(false)
+  const authenticated = computed(() => status.value === 'authenticated' && !!user.value)
+  const isAdmin = computed(() => authenticated.value && user.value?.role === 'ADMIN')
+  let initialization: Promise<void> | null = null
+
+  function clear() {
+    invalidateSessionRequests()
+    user.value = null
+    accessToken.value = null
+    expiresAt.value = 0
+    status.value = 'guest'
+    sessionError.value = ''
+  }
+
+  function accept(tokens: Tokens) {
+    user.value = tokens.user
+    accessToken.value = tokens.accessToken
+    expiresAt.value = Date.now() + tokens.expiresIn * 1000
+    status.value = 'authenticated'
+    sessionError.value = ''
+  }
+
+  function fail(error: unknown) {
+    clear()
+
+    const problem = apiError(error)
+    if (problem.status !== 401) {
+      status.value = 'unavailable'
+      sessionError.value = problem.message
+    }
+  }
+
+  bindSession({
+    token: () => accessToken.value,
+    expired: () => Date.now() >= expiresAt.value - 5000,
+    accept,
+    fail,
+  })
+
+  async function initialize(force = false) {
+    if (initialization) return initialization
+    if (!force && status.value !== 'pending') return
+    status.value = 'pending'
+    initialization = refreshSession()
+      .then(() => undefined)
+      .catch(() => undefined)
+      .finally(() => {
+        initialization = null
+      })
+    return initialization
+  }
+
+  async function exclusive<T>(operation: () => Promise<T>): Promise<T> {
+    if (busy.value) throw new Error(ui.session.busy)
+    busy.value = true
+    try {
+      if (initialization) await initialization
+      await waitForRefresh()
+      return await operation()
+    } finally {
+      busy.value = false
+    }
+  }
+
+  async function login(body: LoginRequest) {
+    await exclusive(async () => {
+      invalidateSessionRequests()
+      accept(await authApi.login(body))
+    })
+  }
+
+  async function register(body: RegisterRequest) {
+    await exclusive(async () => {
+      invalidateSessionRequests()
+      accept(await authApi.register(body))
+    })
+  }
+
+  async function logout(all = false) {
+    await exclusive(async () => {
+      if (all && accessToken.value && Date.now() >= expiresAt.value - 5000) await refreshSession()
+      await (all ? authApi.logoutAll() : authApi.logout())
+      clear()
+    })
+  }
+
+  async function changePassword(body: PasswordChange) {
+    await exclusive(async () => {
+      await authApi.changePassword(body)
+      clear()
+    })
+  }
+
+  async function loadProfile() {
+    user.value = await authApi.me()
+  }
+
+  async function updateProfile(displayName: string) {
+    user.value = await authApi.update(displayName)
+  }
+
+  function canEdit(authorId: number | null) {
+    return authenticated.value && (isAdmin.value || user.value?.id === authorId)
+  }
+
+  return {
+    user,
+    accessToken,
+    status,
+    sessionError,
+    busy,
+    authenticated,
+    isAdmin,
+    initialize,
+    login,
+    register,
+    logout,
+    changePassword,
+    loadProfile,
+    updateProfile,
+    canEdit,
+  }
+})

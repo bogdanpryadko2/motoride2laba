@@ -1,0 +1,13 @@
+.git
+.idea
+.vscode
+.env
+.env.*
+node_modules
+dist
+dist-ssr
+coverage
+docs
+*.log
+*.tsbuildinfo
+.DS_Store

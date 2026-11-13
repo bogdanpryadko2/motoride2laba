@@ -1,56 +1,52 @@
+<script setup lang="ts">
+import { ru as ui } from '@/locales/ru'
+import { onMounted } from 'vue'
+import MotoCard from '@/components/MotoCard.vue'
+import RequestState from '@/components/ui/RequestState.vue'
+import { motorcyclesApi } from '@/api/motorcycles'
+import { useRequest } from '@/composables/useRequest'
+
+const catalog = useRequest(() => motorcyclesApi.list({ page: 0, size: 4, sort: 'newest' }))
+const top = useRequest(motorcyclesApi.top)
+
+onMounted(() => {
+  void catalog.load()
+  void top.load()
+})
+</script>
 <template>
   <div class="hero">
-    <span class="hero-tag">Speed Performance Drive</span>
-    <h1>Спортивные мотоциклы <span>для настоящих мужиков</span></h1>
-    <p>Мощь, аэродинамика и адреналин. Выбери свой байк и ворвись в мир высокой скорости.</p>
+    <span class="hero-tag">{{ ui.home.tagline }}</span>
+    <h1>
+      {{ ui.home.title }} <span>{{ ui.home.subtitle }}</span>
+    </h1>
+    <p>{{ ui.home.description }}</p>
+    <RouterLink to="/motorcycles">{{ ui.home.catalog }}</RouterLink>
   </div>
-
+  <RequestState
+    :loading="catalog.loading.value"
+    :error="catalog.error.value"
+    :empty="catalog.data.value?.content.length === 0"
+    @retry="catalog.load"
+  />
   <div class="moto-grid">
-    <MotoCard
-      v-for="moto in motos"
-      :key="moto.title"
-      :icon="moto.icon"
-      :title="moto.title"
-      :spec="moto.spec"
-      :description="moto.description"
-      :badge="moto.badge"
-    />
+    <MotoCard v-for="moto in catalog.data.value?.content" :key="moto.id" :motorcycle="moto" />
   </div>
+  <section class="top-section">
+    <h2>{{ ui.home.top }}</h2>
+    <RequestState
+      :loading="top.loading.value"
+      :error="top.error.value"
+      :empty="top.data.value?.length === 0"
+      @retry="top.load"
+    />
+    <div class="moto-grid">
+      <MotoCard v-for="moto in top.data.value" :key="moto.id" :motorcycle="moto" />
+    </div>
+  </section>
 </template>
-
-<script setup lang="ts">
-import MotoCard from '../components/MotoCard.vue'
-
-const motos = [
-  {
-    icon: 'YZF',
-    title: 'YZF-R1',
-    spec: '998 см³ • 200 л.с.',
-    description: 'Кросс-плановая четвёрка с акустикой MotoGP. Максимальная скорость — 299 км/ч.',
-    badge: 'Легенда',
-  },
-  {
-    icon: 'V4',
-    title: 'Panigale V4',
-    spec: '1103 см³ • 214 л.с.',
-    description: 'Итальянский характер, десмодромный V4 и аэродинамика от Ducati Corse.',
-    badge: 'Италия',
-  },
-  {
-    icon: 'HON',
-    title: 'Fireblade SP',
-    spec: '999 см³ • 215 л.с.',
-    description: 'Honda с электронным управлением и полуактивной подвеской Öhlins.',
-    badge: 'Точность',
-  },
-  {
-    icon: 'H2',
-    title: 'Ninja H2',
-    spec: '998 см³ • 310 л.с.',
-    description: 'Суперчарджер, который выдаёт невероятную тягу на любых оборотах.',
-    badge: 'Турбо',
-  },
-]
-</script>
-
-<style scoped src="../assets/css/pages/home.css"></style>
+<style scoped>
+.top-section {
+  margin-top: 32px;
+}
+</style>

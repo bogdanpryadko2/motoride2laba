@@ -1,52 +1,76 @@
+<script setup lang="ts">
+import { ru as ui } from '@/locales/ru'
+import { onMounted } from 'vue'
+import { motorcyclesApi } from '@/api/motorcycles'
+import { technologiesApi } from '@/api/technologies'
+import { useRequest } from '@/composables/useRequest'
+import RequestState from '@/components/ui/RequestState.vue'
+
+const top = useRequest(motorcyclesApi.top)
+const technologies = useRequest(technologiesApi.list)
+
+onMounted(() => {
+  void top.load()
+  void technologies.load()
+})
+</script>
 <template>
   <div class="content-wrap">
     <div class="content-main">
-      <h2>Мир спортивных мотоциклов</h2>
-      <span class="sub">Техника, которая меняет восприятие скорости</span>
+      <h2>{{ ui.about.title }}</h2>
+      <span class="sub">{{ ui.about.subtitle }}</span>
 
       <p>
-        Спортивные мотоциклы — это не просто транспорт. Это симбиоз инженерии,
-        аэродинамики и человеческой воли. Каждый байк создаётся с одной целью —
-        побеждать. От трековых монстров до серийных супербайков — все они дарят
-        уникальный опыт.
+        {{ ui.about.intro }}
       </p>
 
       <p>
-        Современные технологии: трекшн-контроль, квикшифтер, радиолокационные
-        системы и активная подвеска делают езду безопаснее, но не лишают остроты
-        ощущений. А звук открытого дросселя — это отдельный вид искусства.
+        {{ ui.about.technologyDescription }}
       </p>
 
       <div class="highlight">
-        <strong>Инженерия и дизайн</strong><br />
-        Каждый спортивный мотоцикл — это результат многолетних исследований
-        в аэродинамической трубе и на гоночных треках. Вес, центровка,
-        распределение массы — всё подчинено одной цели: максимальной
-        эффективности на трассе.
+        <strong>{{ ui.about.engineeringTitle }}</strong
+        ><br />
+        {{ ui.about.engineeringDescription }}
       </div>
 
       <p>
-        Современные супербайки оснащаются полуактивными подвесками, которые
-        адаптируются к дорожному покрытию в реальном времени, а также
-        системами помощи при старте и торможении, что позволяет даже
-        неопытному райдеру чувствовать себя уверенно.
+        {{ ui.about.assistantsDescription }}
       </p>
     </div>
 
     <aside class="sidebar-box">
-      <h4>ТОП-3 супербайка</h4>
+      <h4>{{ ui.about.top }}</h4>
+      <RequestState
+        :loading="top.loading.value"
+        :error="top.error.value"
+        :empty="top.data.value?.length === 0"
+        @retry="top.load"
+      />
       <ul>
-        <li><span class="num">01</span> Kawasaki Ninja H2 — 310 л.с.</li>
-        <li><span class="num">02</span> Ducati Panigale V4 — 214 л.с.</li>
-        <li><span class="num">03</span> Honda Fireblade SP — 215 л.с.</li>
+        <li v-for="(moto, index) in top.data.value" :key="moto.id">
+          <span class="num">{{ index + 1 }}</span
+          ><RouterLink :to="`/motorcycles/${moto.id}`"
+            >{{ moto.brand }} {{ moto.model }} — {{ moto.horsepower }}
+            {{ ui.motorcycles.horsepowerUnit }}</RouterLink
+          >
+        </li>
       </ul>
       <hr class="divider-line" />
-      <h4>Технологии</h4>
+      <p>
+        <a href="/photo-credits.html">{{ ui.images.credits }}</a>
+      </p>
+      <h4>{{ ui.admin.technologies }}</h4>
+      <RequestState
+        :loading="technologies.loading.value"
+        :error="technologies.error.value"
+        :empty="technologies.data.value?.length === 0"
+        @retry="technologies.load"
+      />
       <ul>
-        <li><span class="num">•</span> Трекшн-контроль</li>
-        <li><span class="num">•</span> Квикшифтер</li>
-        <li><span class="num">•</span> Активная подвеска</li>
-        <li><span class="num">•</span> Радиолокационный ассистент</li>
+        <li v-for="technology in technologies.data.value" :key="technology.id">
+          <RouterLink :to="`/technologies/${technology.id}`">{{ technology.name }}</RouterLink>
+        </li>
       </ul>
     </aside>
   </div>
