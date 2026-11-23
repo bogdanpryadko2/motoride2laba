@@ -32,6 +32,9 @@ export function passwordError(value: string): string {
 export function imageUrl(value: string | null | undefined): string | undefined {
   if (!value) return undefined
   if (value.startsWith('/images/'))
-    return `${(import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')}${value}`
+    return new URL(
+      value,
+      new URL(import.meta.env.VITE_API_BASE_URL || '/api', window.location.origin),
+    ).href
   return /^https?:\/\//i.test(value) ? value : undefined
 }

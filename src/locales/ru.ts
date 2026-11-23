@@ -158,7 +158,6 @@ export const ru = {
     uploaded: 'Фотография загружена. Сохраните мотоцикл, чтобы применить её.',
     upload: 'Загрузить фотографию (PNG, JPEG до 5 МБ)',
     unavailable: 'Фото недоступно',
-    credits: 'Источники фотографий',
     urlPlaceholder: 'https://example.com/photo.jpg или /images/photo.jpg',
   },
   comments: {

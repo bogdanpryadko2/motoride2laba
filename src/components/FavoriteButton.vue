@@ -3,7 +3,7 @@ import { ru as ui } from '@/locales/ru'
 import { watch, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useFavoritesStore } from '@/stores/favorites'
-import { useMutation } from '@/composables/useRequest'
+import { useMutation } from '@/composables/useMutation'
 import FormNotice from './ui/FormNotice.vue'
 
 defineProps<{ motorcycleId: number }>()

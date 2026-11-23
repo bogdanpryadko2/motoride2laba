@@ -2,7 +2,7 @@
 import { ru as ui } from '@/locales/ru'
 import { computed, onMounted } from 'vue'
 import { useFavoritesStore } from '@/stores/favorites'
-import { useMutation } from '@/composables/useRequest'
+import { useMutation } from '@/composables/useMutation'
 import { usePageQuery } from '@/composables/usePageQuery'
 import MotoCard from '@/components/MotoCard.vue'
 import RequestState from '@/components/ui/RequestState.vue'

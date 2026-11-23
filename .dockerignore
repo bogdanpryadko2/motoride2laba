@@ -7,7 +7,6 @@ node_modules
 dist
 dist-ssr
 coverage
-docs
 *.log
 *.tsbuildinfo
 .DS_Store

@@ -2,7 +2,7 @@ import { ru as ui } from '@/locales/ru'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { authApi } from '@/api/auth'
-import { bindSession, refreshSession, invalidateSessionRequests, waitForRefresh } from '@/api/http'
+import { bindSession } from '@/api/http'
 import { apiError } from '@/api/errors'
 import type { LoginRequest, RegisterRequest, PasswordChange, Tokens, User } from '@/types/api'
 
@@ -16,9 +16,11 @@ export const useAuthStore = defineStore('auth', () => {
   const authenticated = computed(() => status.value === 'authenticated' && !!user.value)
   const isAdmin = computed(() => authenticated.value && user.value?.role === 'ADMIN')
   let initialization: Promise<void> | null = null
+  let refreshFlight: Promise<Tokens> | null = null
+  let sessionVersion = 0
 
   function clear() {
-    invalidateSessionRequests()
+    sessionVersion++
     user.value = null
     accessToken.value = null
     expiresAt.value = 0
@@ -44,12 +46,29 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  bindSession({
-    token: () => accessToken.value,
-    expired: () => Date.now() >= expiresAt.value - 5000,
-    accept,
-    fail,
-  })
+  function tokenNeedsRefresh() {
+    return Date.now() >= expiresAt.value - 5000
+  }
+
+  async function performRefresh() {
+    const version = sessionVersion
+    try {
+      const tokens = await authApi.refresh()
+      if (version !== sessionVersion) throw new Error(ui.session.changed)
+      accept(tokens)
+      return tokens
+    } catch (error) {
+      if (version === sessionVersion) fail(error)
+      throw error
+    } finally {
+      refreshFlight = null
+    }
+  }
+
+  function refreshSession() {
+    refreshFlight ??= performRefresh()
+    return refreshFlight
+  }
 
   async function initialize(force = false) {
     if (initialization) return initialization
@@ -64,12 +83,12 @@ export const useAuthStore = defineStore('auth', () => {
     return initialization
   }
 
-  async function exclusive<T>(operation: () => Promise<T>): Promise<T> {
+  async function runSessionOperation<T>(operation: () => Promise<T>): Promise<T> {
     if (busy.value) throw new Error(ui.session.busy)
     busy.value = true
     try {
       if (initialization) await initialization
-      await waitForRefresh()
+      await refreshFlight?.catch(() => undefined)
       return await operation()
     } finally {
       busy.value = false
@@ -77,29 +96,29 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(body: LoginRequest) {
-    await exclusive(async () => {
-      invalidateSessionRequests()
+    await runSessionOperation(async () => {
+      sessionVersion++
       accept(await authApi.login(body))
     })
   }
 
   async function register(body: RegisterRequest) {
-    await exclusive(async () => {
-      invalidateSessionRequests()
+    await runSessionOperation(async () => {
+      sessionVersion++
       accept(await authApi.register(body))
     })
   }
 
   async function logout(all = false) {
-    await exclusive(async () => {
-      if (all && accessToken.value && Date.now() >= expiresAt.value - 5000) await refreshSession()
+    await runSessionOperation(async () => {
+      if (all && accessToken.value && tokenNeedsRefresh()) await refreshSession()
       await (all ? authApi.logoutAll() : authApi.logout())
       clear()
     })
   }
 
   async function changePassword(body: PasswordChange) {
-    await exclusive(async () => {
+    await runSessionOperation(async () => {
       await authApi.changePassword(body)
       clear()
     })
@@ -116,6 +135,12 @@ export const useAuthStore = defineStore('auth', () => {
   function canEdit(authorId: number | null) {
     return authenticated.value && (isAdmin.value || user.value?.id === authorId)
   }
+
+  bindSession({
+    token: () => accessToken.value,
+    expired: tokenNeedsRefresh,
+    refresh: refreshSession,
+  })
 
   return {
     user,

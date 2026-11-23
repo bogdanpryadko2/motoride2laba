@@ -57,9 +57,6 @@ onMounted(() => {
         </li>
       </ul>
       <hr class="divider-line" />
-      <p>
-        <a href="/photo-credits.html">{{ ui.images.credits }}</a>
-      </p>
       <h4>{{ ui.admin.technologies }}</h4>
       <RequestState
         :loading="technologies.loading.value"

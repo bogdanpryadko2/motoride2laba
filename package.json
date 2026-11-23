@@ -10,11 +10,11 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --max-warnings 0",
-    "format": "prettier --write src docs *.ts *.js *.json *.md .env.example index.html --ignore-unknown",
-    "docker:up": "sh scripts/docker.sh up",
-    "docker:down": "sh scripts/docker.sh down",
-    "docker:status": "sh scripts/docker.sh status",
-    "docker:logs": "sh scripts/docker.sh logs"
+    "format": "prettier --write src *.ts *.js *.json *.md .env.example index.html --ignore-unknown",
+    "docker:up": "sh docker/compose.sh up",
+    "docker:down": "sh docker/compose.sh down",
+    "docker:status": "sh docker/compose.sh status",
+    "docker:logs": "sh docker/compose.sh logs"
   },
   "dependencies": {
     "axios": "^1.21.0",

@@ -3,7 +3,7 @@ import { ru as ui } from '@/locales/ru'
 import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useMutation } from '@/composables/useRequest'
+import { useMutation } from '@/composables/useMutation'
 import ConfirmLogout from './ui/ConfirmLogout.vue'
 
 const auth = useAuthStore()

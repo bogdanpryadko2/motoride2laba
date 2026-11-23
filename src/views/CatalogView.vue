@@ -14,16 +14,21 @@ import FormField from '@/components/ui/FormField.vue'
 const route = useRoute()
 const router = useRouter()
 const { page, changePage } = usePageQuery()
-const stringParam = (value: unknown) => (typeof value === 'string' ? value : '')
-const query = computed(() => ({
-  page: page.value,
-  size: 12,
-  search: stringParam(route.query.search),
-  category: stringParam(route.query.category),
-  sort: ['newest', 'hp_desc', 'price_asc', 'price_desc'].includes(stringParam(route.query.sort))
-    ? stringParam(route.query.sort)
-    : 'newest',
-}))
+function stringParam(value: unknown) {
+  return typeof value === 'string' ? value : ''
+}
+
+const query = computed(() => {
+  const sort = stringParam(route.query.sort)
+
+  return {
+    page: page.value,
+    size: 12,
+    search: stringParam(route.query.search),
+    category: stringParam(route.query.category),
+    sort: ['newest', 'hp_desc', 'price_asc', 'price_desc'].includes(sort) ? sort : 'newest',
+  }
+})
 const filters = reactive({ search: '', category: '', sort: 'newest' })
 const { data, loading, error, load } = useRequest(() => motorcyclesApi.list(query.value))
 const categories = useRequest(categoriesApi.list)

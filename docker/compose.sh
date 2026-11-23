@@ -25,7 +25,7 @@ case "${1:-up}" in
     down) set -- down ;;
     status) set -- ps ;;
     logs) set -- logs --tail 100 ;;
-    *) printf '%s\n' 'Usage: sh scripts/docker.sh [up|down|status|logs]' >&2; exit 1 ;;
+    *) printf '%s\n' 'Usage: sh docker/compose.sh [up|down|status|logs]' >&2; exit 1 ;;
 esac
 
 exec docker compose \

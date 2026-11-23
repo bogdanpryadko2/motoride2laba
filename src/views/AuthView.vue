@@ -3,7 +3,7 @@ import { ru as ui } from '@/locales/ru'
 import { reactive } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useMutation } from '@/composables/useRequest'
+import { useMutation } from '@/composables/useMutation'
 import FormField from '@/components/ui/FormField.vue'
 import FormNotice from '@/components/ui/FormNotice.vue'
 
